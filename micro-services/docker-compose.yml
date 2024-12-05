@@ -111,7 +111,29 @@ services:
     networks:
       - app-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      app-network: null
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin   # Default admin user
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Default admin password
+    ports:
+      - "3000:3000"
+    networks:
+      app-network: null
+    depends_on:
+      - prometheus
   
 
 volumes:
@@ -119,6 +141,7 @@ volumes:
   elasticsearch_data:
   logstash_data:
   redis_data:
+  prometheus_data:
 
 networks:
   app-network:
