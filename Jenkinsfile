@@ -16,14 +16,13 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Navigate to the directory containing docker-compose.yml
-                    dir('micro-services') {
+                   
                         // Validate docker-compose file
                         sh 'docker-compose config'
 
                         // Build and deploy services
                         sh 'docker-compose up --build -d'
-                    }
+                    
                 }
             }
         }
