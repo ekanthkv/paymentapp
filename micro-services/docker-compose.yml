@@ -62,7 +62,7 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "80:81"
+      - "80:80"
     depends_on:
       - auth-service
       - payment-service
