@@ -3,6 +3,11 @@ pipeline {
 
     environment {
         COMPOSE_FILE = 'micro-services/docker-compose.yml'
+	DOCKER_USERNAME = 'ekanthkv' // Replace with your Docker username
+        IMAGE_NAME = 'paymentapp'
+        VERSION = '1.0.0'
+        NEXUS_REPO_URL = 'http://localhost:8081/repository/paymentapp/' // Nexus Repository URL
+        NEXUS_CREDENTIALS_ID = 'nexus-credentials' // Jenkins Credentials ID for Nexus
     }
 
     stages {
@@ -26,6 +31,27 @@ pipeline {
                 }
             }
         }
+
+         stage('Push to Nexus') {
+            steps {
+                script {
+                    // List all Docker images built by docker-compose
+                    def images = sh(script: "docker-compose images --format '{{.Repository}}:{{.Tag}}'", returnStdout: true).trim()
+
+                    // Loop through each image and push to Nexus
+                    images.split('\n').each { image ->
+                        def repoTag = "${NEXUS_REPO_URL}${image.split('/').last()}:${VERSION}"
+                        // Tag the image for Nexus
+                        sh "docker tag ${image} ${repoTag}"
+                        // Push the tagged image to Nexus
+                        sh "docker push ${repoTag}"
+                    }
+                }
+            }
+        }
+
+
+
 
         stage('Post-Deployment Verification') {
             steps {
