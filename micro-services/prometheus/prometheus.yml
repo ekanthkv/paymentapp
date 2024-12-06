@@ -6,3 +6,7 @@ scrape_configs:
     static_configs:
       - targets: ['nginx:80', 'payment-service:80', 'auth-service:80']
 
+rule_files:
+  - /etc/prometheus/alert.rules.yml
+
+scrape_configs:

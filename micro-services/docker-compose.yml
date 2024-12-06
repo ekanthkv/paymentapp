@@ -117,6 +117,7 @@ services:
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml  
     ports:
       - "9090:9090"
     networks:
@@ -134,7 +135,16 @@ services:
       app-network: null
     depends_on:
       - prometheus
-  
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager/config.yml:/etc/alertmanager/config.yml
+    ports:
+      - "9093:9093"
+    networks:
+      app-network: null
 
 volumes:
   mongodb_data:

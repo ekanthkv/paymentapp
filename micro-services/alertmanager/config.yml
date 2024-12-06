@@ -1,0 +1,14 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'   # Replace with your SMTP server
+  smtp_from: 'ekvgitlearn@gmail.com'     # Replace with your email
+  smtp_auth_username: 'ekvgitlearn@gmail.com'
+  smtp_auth_password: 'Pappettan@123'
+
+route:
+  receiver: 'email-alert'
+
+receivers:
+  - name: 'email-alert'
+    email_configs:
+      - to: 'kvekanth@gmail.com' # Replace with recipient's email
+
