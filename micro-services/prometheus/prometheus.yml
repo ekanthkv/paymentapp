@@ -9,4 +9,3 @@ scrape_configs:
 rule_files:
   - /etc/prometheus/alert.rules.yml
 
-scrape_configs:
