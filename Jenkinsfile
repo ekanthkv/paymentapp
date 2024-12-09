@@ -32,29 +32,6 @@ pipeline {
             }
         }
 
-	stage('Push to Nexus') {
-    steps {
-        script {
-            docker.withRegistry("http://localhost:8082/repository/paymentapp", 'nexus-credentials') {
-                // List images from docker-compose
-                def images = sh(script: "docker-compose config | grep image: | awk '{print $2}'", returnStdout: true).trim().split('\n')
-                
-                // Tag and push each image
-                for (image in images) {
-                    def imageName = image.split(':')[0]
-                    def tag = image.split(':')[1] ?: 'latest'
-
-                    // Tagging the image for Nexus
-                    sh "docker tag ${image} localhost:8082/repository/paymentapp/${imageName}:${tag}"
-
-                    // Pushing the image to Nexus
-                    sh "docker push localhost:8082/repository/paymentapp/${imageName}:${tag}"
-                }
-            }
-        }
-    }
-}
-
 
 
 
