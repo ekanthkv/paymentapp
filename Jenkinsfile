@@ -35,24 +35,21 @@ pipeline {
 	stage('Push to Nexus') {
     steps {
         script {
-            // Correct the Nexus repository URL without protocol
-            def sanitizedRepoUrl = NEXUS_REPO_URL.replaceAll(/^https?:\/\//, '')
+            docker.withRegistry("http://localhost:8082/repository/paymentapp", 'nexus-credentials') {
+                // List images from docker-compose
+                def images = sh(script: "docker-compose config | grep image: | awk '{print $2}'", returnStdout: true).trim().split('\n')
+                
+                // Tag and push each image
+                for (image in images) {
+                    def imageName = image.split(':')[0]
+                    def tag = image.split(':')[1] ?: 'latest'
 
-            // Extract image details from docker-compose.yml
-            def services = sh(script: "docker-compose config | grep 'image:' | awk '{print \$2}'", returnStdout: true).trim().split('\n')
+                    // Tagging the image for Nexus
+                    sh "docker tag ${image} localhost:8082/repository/paymentapp/${imageName}:${tag}"
 
-            // Loop through each service and push the associated image
-            services.each { image ->
-                def imageParts = image.split(':') // Split the image into name and tag
-                def imageName = imageParts[0] // Image name (e.g., prom/alertmanager)
-                def currentTag = imageParts.size() > 1 ? imageParts[1] : 'latest' // Default to 'latest' if no tag
-                def repoTag = "${sanitizedRepoUrl}${imageName.split('/').last()}:${VERSION}" // Nexus repo format
-
-                // Tag the image for Nexus
-                sh "docker tag ${imageName}:${currentTag} ${repoTag}"
-
-                // Push the tagged image to Nexus
-                sh "docker push ${repoTag}"
+                    // Pushing the image to Nexus
+                    sh "docker push localhost:8082/repository/paymentapp/${imageName}:${tag}"
+                }
             }
         }
     }
