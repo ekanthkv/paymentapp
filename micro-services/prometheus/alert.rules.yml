@@ -1,12 +1,21 @@
 groups:
-  - name: resource-usage-alerts
+  - name: resource-alerts
     rules:
       - alert: HighCPUUsage
-        expr: node_cpu_seconds_total{mode="idle"} < 0.2   # Example query
-        for: 2m
+        expr: container_cpu_usage_seconds_total{container="alertmanager"} > 0.5
+        for: 1m
         labels:
           severity: warning
         annotations:
-          summary: "High CPU usage detected"
-          description: "CPU usage is above 80% for more than 2 minutes."
+          summary: "High CPU usage detected in container {{ $labels.container }}"
+          description: "CPU usage is above 50% for 1 minute."
+
+      - alert: HighMemoryUsage
+        expr: container_memory_usage_bytes{container="alertmanager"} > 100000000
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected in container {{ $labels.container }}"
+          description: "Memory usage is above 100MB for 1 minute."
 
