@@ -6,7 +6,7 @@ pipeline {
 	DOCKER_USERNAME = 'ekanthkv' // Replace with your Docker username
         IMAGE_NAME = 'paymentapp'
         VERSION = '1.0.0'
-        NEXUS_REPO_URL = 'http://localhost:8081/repository/paymentapp/' // Nexus Repository URL
+        NEXUS_REPO_URL = 'http://localhost:8082/repository/paymentapp/' // Nexus Repository URL
         NEXUS_CREDENTIALS_ID = 'nexus-credentials' // Jenkins Credentials ID for Nexus
     }
 
