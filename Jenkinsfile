@@ -33,17 +33,20 @@ pipeline {
         }
 
 	stage('Push to Nexus') {
-  	  steps {
-                script {
-                         // Extract image details from docker-compose.yml
-                        def services = sh(script: "docker-compose config | grep 'image:' | awk '{print \$2}'", returnStdout: true).trim().split('\n')
+    steps {
+        script {
+            // Extract image details from docker-compose.yml
+            def services = sh(script: "docker-compose config | grep 'image:' | awk '{print \$2}'", returnStdout: true).trim().split('\n')
 
-                         // Loop through each service and push the associated image
-                         services.each { image ->
-                          def repoTag = "${NEXUS_REPO_URL}${image.split('/').last()}:${VERSION}"
+            // Loop through each service and push the associated image
+            services.each { image ->
+                def imageParts = image.split(':') // Split the image into name and tag
+                def imageName = imageParts[0] // Image name (e.g., prom/alertmanager)
+                def currentTag = imageParts.size() > 1 ? imageParts[1] : 'latest' // Default to 'latest' if no tag
+                def repoTag = "${NEXUS_REPO_URL}${imageName.split('/').last()}:${VERSION}" // Nexus repo format
 
                 // Tag the image for Nexus
-                sh "docker tag ${image} ${repoTag}"
+                sh "docker tag ${imageName}:${currentTag} ${repoTag}"
 
                 // Push the tagged image to Nexus
                 sh "docker push ${repoTag}"
@@ -51,6 +54,7 @@ pipeline {
         }
     }
 }
+
 
 
 
