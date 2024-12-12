@@ -1,11 +1,7 @@
-global:
-  scrape_interval: 15s
-
 scrape_configs:
   - job_name: 'docker-services'
     static_configs:
-      - targets: ['nginx:80', 'payment-service:80', 'auth-service:80']
-
-rule_files:
-  - /etc/prometheus/alert.rules.yml
+      - targets: ['nginx:80', 'payment-service:8083', 'auth-service:8084']
+    metrics_path: '/metrics'
+    scheme: 'http'
 

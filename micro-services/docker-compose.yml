@@ -18,6 +18,8 @@ services:
       - JWT_SECRET=your-secret-key
     volumes:
       - ./backend/common:/app/common
+    ports:
+      - "8084:80"   # Exposing port 80 internally to port 8082 on the host
     logging:
       driver: "json-file"
       options:
@@ -36,6 +38,9 @@ services:
       - ELASTICSEARCH_HOST=elasticsearch
     volumes:
       - ./backend/common:/app/common
+  
+    ports:
+      - "8083:80"   # Exposing port 80 internally to port 8082 on the host
     logging:
       driver: "json-file"
       options:
